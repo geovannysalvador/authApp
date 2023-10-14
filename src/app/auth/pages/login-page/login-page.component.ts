@@ -1,9 +1,12 @@
 import { Component, inject } from '@angular/core';
+import { Router, } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
 
 // ES6 Modules or TypeScript
 import Swal from 'sweetalert2'
+
+import { AuthService } from '../../services/auth.service';
+
 
 @Component({
   selector: 'login-page',
@@ -13,7 +16,8 @@ import Swal from 'sweetalert2'
 export class LoginPageComponent {
 
   private fb = inject( FormBuilder );
-  private authService = inject(AuthService);
+  private authService = inject( AuthService );
+  private router = inject( Router );
 
   public myForm: FormGroup = this.fb.group({
     email: ['prueba1@gmail.com', [ Validators.required, Validators.email ]],
@@ -25,9 +29,11 @@ export class LoginPageComponent {
 
     this.authService.login(email, password)
       .subscribe( {
-        next: () => console.log('Todo funciona bien'),
+        // Si tofo funciona bien
+        // next: () => console.log('Todo funciona bien'), navegar al dashboard
+        next: () => this.router.navigateByUrl('/dashboard'),
         error: (messageError) => {
-          // console.log({ loginError: err });
+          // console.log({ loginError: err }); si no fuciona mostrar el error de backend
           Swal.fire('Error', messageError, 'error' )
 
         }
