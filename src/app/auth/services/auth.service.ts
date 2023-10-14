@@ -22,6 +22,14 @@ export class AuthService {
   public authStatus = computed( () => this._authstatus() );
   //! publicas para usar fuera
 
+  private setAuthentication( user:User, token:string):boolean{
+    this._currentUser.set(user);
+    this._authstatus.set(AuthStatus.authenticated);
+    localStorage.setItem('token', token);
+
+    return true
+  }
+
 
   login( email:string, password:string ):Observable<boolean>{
 
@@ -32,15 +40,7 @@ export class AuthService {
     return this.http.post<LoginResponse>( url, body )
       .pipe(
         // si todo sale bien hace esto.
-        tap( ({ user, token }) =>{
-          this._currentUser.set(user);
-          this._authstatus.set(AuthStatus.authenticated);
-          localStorage.setItem('token', token)
-          // console.log({user,token});
-
-        }),
-        // transformacion del problema boolean del login
-        map( () => true ),
+        map( ({ user, token }) => this.setAuthentication( user, token )),
 
         // TODO si sale mal el login
         catchError( err => throwError( () => err.error.message )
@@ -61,12 +61,7 @@ export class AuthService {
 
     return this.http.get<CheckTokenResponse>( url, {headers} )
       .pipe(
-        map( ({token, user})=> {
-          this._currentUser.set(user);
-          this._authstatus.set(AuthStatus.authenticated);
-          localStorage.setItem('token', token)
-          return true;
-        } ),
+        map( ({ user, token }) => this.setAuthentication( user, token )),
         // Error
         catchError( () => {
           this._authstatus.set( AuthStatus.notAuthenticated );
