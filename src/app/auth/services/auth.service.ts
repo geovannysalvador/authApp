@@ -9,8 +9,6 @@ import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfac
 })
 export class AuthService {
 
-  constructor() { }
-
   private readonly baseUrl:string =  environmets.baseUrl;
   private http = inject( HttpClient );
 
@@ -21,6 +19,11 @@ export class AuthService {
   public currentUser = computed( () => this._currentUser() );
   public authStatus = computed( () => this._authstatus() );
   //! publicas para usar fuera
+
+  constructor() {
+    // Para quese use por pirmera vez
+    this.checkAuthStatus().subscribe();
+   }
 
   private setAuthentication( user:User, token:string):boolean{
     this._currentUser.set(user);
@@ -43,8 +46,7 @@ export class AuthService {
         map( ({ user, token }) => this.setAuthentication( user, token )),
 
         // TODO si sale mal el login
-        catchError( err => throwError( () => err.error.message )
-        )
+        catchError( err => throwError( () => err.error.message ))
       );
   }
 
@@ -57,7 +59,7 @@ export class AuthService {
 
     // recibir el heades y el bearer token
     const headers = new HttpHeaders()
-      .set('Authorization', `Bearer${token}`)
+      .set('Authorization', `Bearer ${ token }`);
 
     return this.http.get<CheckTokenResponse>( url, {headers} )
       .pipe(

@@ -14,8 +14,13 @@ export const isAuthenticatedGuard: CanActivateFn = (route, state) => {
   const router = inject( Router);
 
   if ( authService.authStatus() === AuthStatus.authenticated ){
-    return true
+    return true;
   }
+
+  // Para que no me saque si entro con mis credenciales. No es necesario pero aca se dejo
+  // if ( authService.authStatus() === AuthStatus.checking ){
+  //   return false;
+  // }
 
   // Si no esta autenticado
   // const url = state.url;
