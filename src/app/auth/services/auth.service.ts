@@ -55,7 +55,11 @@ export class AuthService {
     const url = `${this.baseUrl}/auth/check-token`;
     const token = localStorage.getItem('token')
 
-    if (!token) return of(false);
+    // if (!token) return of(false); proceso anterio apara no entrar al login de forma permanete
+    if (!token) {
+      this.logout();
+      return of(false);
+    }
 
     // recibir el heades y el bearer token
     const headers = new HttpHeaders()
@@ -71,6 +75,12 @@ export class AuthService {
         } )
       );
 
+  }
+
+  logout(){
+    localStorage.removeItem('token');
+    this._currentUser.set(null);
+    this._authstatus.set( AuthStatus.notAuthenticated );
   }
 
 }
