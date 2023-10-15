@@ -50,6 +50,22 @@ export class AuthService {
       );
   }
 
+  register(name:string, email:string, password:string ):Observable<boolean>{
+
+    const url = `${this.baseUrl}/auth/register`
+    // const body = {email:email, password:password} Es lo mismo que abajo
+    const body = {name, email, password}
+
+    return this.http.post<LoginResponse>( url, body )
+      .pipe(
+        // si todo sale bien hace esto.
+        map( ({ user, token }) => this.setAuthentication( user, token )),
+
+        // TODO si sale mal el login
+        catchError( err => throwError( () => err.error.message ))
+      );
+  }
+
   checkAuthStatus():Observable<boolean>{
 
     const url = `${this.baseUrl}/auth/check-token`;
